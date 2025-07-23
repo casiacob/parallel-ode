@@ -10,17 +10,17 @@ import pandas as pd
 from jax import config
 
 config.update("jax_enable_x64", True)
-config.update("jax_platform_name", "cuda")
+config.update("jax_platform_name", "cpu")
 
 K = 2 * jnp.sqrt(2 * jnp.pi)/jnp.pi
 t0 = 0.0
-tf = 10.0
+tf = 2.0
 dt = 1e-2
 t_eval = jnp.arange(t0, tf + dt, dt)
 nb_steps = len(t_eval) - 1
 
 
-n_oscillators = [10, 100, 1000, 10000]
+n_oscillators = [2, 10, 100, 1000]
 mean_seq_elapsed = []
 mean_par_elapsed = []
 mean_parareal_elapsed = []
