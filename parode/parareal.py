@@ -12,7 +12,7 @@ def parareal_integrate(
     coarse_solver: Callable,
     fine_solver: Callable,
 ):
-    nb_steps_G = 20
+    nb_steps_G = 40
     nb_steps_F = int(nb_steps / nb_steps_G)
     dt_G = nb_steps_F * dt
     X_init = seq_integrate(ode, x0, dt_G, nb_steps_G, coarse_solver)

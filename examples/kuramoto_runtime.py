@@ -14,13 +14,13 @@ config.update("jax_platform_name", "cuda")
 
 K = 2 * jnp.sqrt(2 * jnp.pi)/jnp.pi
 t0 = 0.0
-tf = 5.0
+tf = 10.0
 dt = 1e-2
 t_eval = jnp.arange(t0, tf + dt, dt)
 nb_steps = len(t_eval) - 1
 
 
-n_oscillators = [2, 10, 100, 500, 1000]
+n_oscillators = [2, 10, 100, 200]
 mean_seq_elapsed = []
 mean_par_elapsed = []
 mean_parareal_elapsed = []
