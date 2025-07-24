@@ -58,7 +58,7 @@ for dt in sampling_periods:
 
     _seq = lambda _x0: seq_integrate(cartpole, _x0, dt, nb_steps, rk4)
     _par = lambda _x0: par_integrate_rk4(cartpole, _x0, nb_steps, dt)
-    _parareal = lambda _x0: parareal_integrate(cartpole, _x0, 60, dt, nb_steps, rk4, rk4)
+    _parareal = lambda _x0: parareal_integrate(cartpole, _x0, 40, dt, nb_steps, rk4, rk4)
 
     _jitted_seq = jit(_seq)
     _jitted_par = jit(_par)
