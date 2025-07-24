@@ -20,7 +20,7 @@ t_eval = jnp.arange(t0, tf + dt, dt)
 nb_steps = len(t_eval) - 1
 
 
-n_oscillators = [2, 10, 100, 1000, 10000]
+n_oscillators = [2, 10, 100, 1000, 5000]
 mean_seq_elapsed = []
 mean_par_elapsed = []
 mean_parareal_elapsed = []
