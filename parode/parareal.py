@@ -7,12 +7,13 @@ from typing import Callable
 def parareal_integrate(
     ode: Callable,
     x0: jnp.ndarray,
+    coarse_solver_steps: int,
     dt: float,
     nb_steps: int,
     coarse_solver: Callable,
     fine_solver: Callable,
 ):
-    nb_steps_G = 40
+    nb_steps_G = coarse_solver_steps
     nb_steps_F = int(nb_steps / nb_steps_G)
     dt_G = nb_steps_F * dt
     X_init = seq_integrate(ode, x0, dt_G, nb_steps_G, coarse_solver)
