@@ -5,6 +5,6 @@ setup(
     version="0.0.1",
     author="Casian Iacob",
     author_email="casian.iacob@aalto.fi",
-    install_requires=["jax[cuda12]", "matplotlib", "pandas"],
+    install_requires=["jax[cuda12]", "matplotlib", "pandas", "optimistix"],
     zip_safe=False,
 )

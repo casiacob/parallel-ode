@@ -11,9 +11,9 @@ from jax import config
 config.update("jax_enable_x64", True)
 config.update("jax_platform_name", "cuda")
 
-s0 = jnp.array([0.0, jnp.pi / 2.0, 0.0, 0.0])
+s0 = jnp.array([0.0, 1.0])
 t0 = 0.0
-tf = 4.0
+tf = 10.0
 
 Ts = [1e-2, 1e-3, 1e-4, 1e-5]
 steps = []
@@ -22,34 +22,10 @@ avg_seq_elapsed = []
 avg_parareal_elapsed = []
 
 
-def cartpole(state):
-
-    # https://underactuated.mit.edu/acrobot.html#cart_pole
-
-    gravity = 9.81
-    pole_length = 0.5
-    cart_mass = 10.0
-    pole_mass = 1.0
-    total_mass = cart_mass + pole_mass
-
-    cart_position, pole_position, cart_velocity, pole_velocity = state
-
-    sth = jnp.sin(pole_position)
-    cth = jnp.cos(pole_position)
-
-    cart_acceleration = (
-        pole_mass * sth * (pole_length * pole_velocity**2 + gravity * cth)
-    ) / (cart_mass + pole_mass * sth**2)
-
-    pole_acceleration = (
-        -pole_mass * pole_length * pole_velocity**2 * cth * sth
-        - total_mass * gravity * sth
-    ) / (pole_length * cart_mass + pole_length * pole_mass * sth**2)
-
-    return jnp.hstack(
-        (cart_velocity, pole_velocity, cart_acceleration, pole_acceleration)
-    )
-
+def vdp(state):
+    x, y = state
+    mu = 1.0
+    return jnp.hstack((y, mu * (1 - x**2) * y - x))
 
 
 for i in range(len(Ts)):
@@ -58,16 +34,16 @@ for i in range(len(Ts)):
     nb_steps = len(t_eval) - 1
     coarse_solver_steps = jnp.int64(jnp.sqrt(nb_steps))
     fine_solver_steps = jnp.int64(nb_steps / coarse_solver_steps)
-    initial_guess = jnp.zeros((nb_steps, s0.shape[0]))
+    initial_guess = jnp.ones((nb_steps, s0.shape[0]))
     steps.append(nb_steps)
     annon_seq_integrate = lambda x0, h: seq_integrate(
-        cartpole, x0, h, nb_steps, method="rk4"
+        vdp, x0, h, nb_steps, method="rk4"
     )
     annon_par_integrate = lambda x0, h: explicit_par_integrate(
-        cartpole, x0, initial_guess, h, max_iter=10, method="rk4"
+        vdp, x0, initial_guess, h, max_iter = 10, method="rk4"
     )
     annon_parareal_integrate = lambda x0, h: parareal_integrate(
-        cartpole,
+        vdp,
         x0,
         coarse_solver_steps,
         fine_solver_steps,
@@ -131,3 +107,4 @@ plt.ylabel('runtime [s]')
 plt.grid(True, which="both", ls="--")
 plt.legend()
 plt.show()
+
