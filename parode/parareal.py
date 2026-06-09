@@ -30,8 +30,12 @@ def parareal_integrate(
             ode, X_G[:-1], dt, nb_steps_F, fine_solver
         )
         X_F = X_dense[:, -1, :]
-        X_F = jnp.vstack((x0, X_F))
-        _, X_G_new = lax.scan(body, x0, (X_F[:-1], X_G[:-1]))
+        X_G_old_dense = vmap(seq_integrate, in_axes=(None, 0, None, None, None))(
+            ode, X_G[:-1], dt_G, 1, coarse_solver
+        )
+        X_G_old = X_G_old_dense[:, -1, :]
+
+        _, X_G_new = lax.scan(body, x0, (X_F, X_G_old))
         X_G_new = jnp.vstack((x0, X_G_new))
         iteration += 1
         return X_G_new, iteration
