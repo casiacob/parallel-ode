@@ -60,23 +60,23 @@ def newton_step(X, x0, ode, dt, step):
     return jnp.vstack((c[0], elems[1])), jnp.max(jnp.abs(c))
 
 
-def implicit_parallel_integrate(ode, x0, initial_guess, dt, max_iter, method):
+def implicit_parallel_integrate(ode, x0, initial_guess, dt, tol, method):
     step = step_functions[method]
 
     def while_body(val):
         X, _, iteration = val
         X_N, err = newton_step(X, x0, ode, dt, step)
-        debug.print('{y} {x}',y=iteration, x=err)
+        # debug.print('{y} {x}',y=iteration, x=err)
         X_new = X + X_N
         iteration += 1
         return X_new, err, iteration
 
     def while_cond(val):
         _, err, iteration = val
-        exit_condition = iteration > max_iter
+        exit_condition = err < tol
         return jnp.logical_not(exit_condition)
 
     sol, _, nb_iterations = lax.while_loop(
         while_cond, while_body, (initial_guess, jnp.array(1e3), 0)
     )
-    return jnp.vstack((x0, sol))
+    return jnp.vstack((x0, sol)), nb_iterations

@@ -1,6 +1,7 @@
 import jax.numpy as jnp
 from jax import vmap, jacfwd, lax
-# from jax import debug
+
+from jax import debug
 
 
 def rk4_step(ode, x, dt):
@@ -62,20 +63,20 @@ def newton_step(X, x0, ode, dt, step):
     return jnp.vstack((c[0], elems[1])), jnp.max(jnp.abs(c))
 
 
-def explicit_par_integrate(ode, x0, initial_guess, dt, max_iter, method):
+def explicit_par_integrate(ode, x0, initial_guess, dt, tol, method):
     step = step_functions[method]
 
     def while_body(val):
         X, _, iteration = val
         X_N, err = newton_step(X, x0, ode, dt, step)
-        # debug.print('{x}', x=err)
+        # debug.print('parallel Newton {x}', x=err)
         X_new = X + X_N
         iteration += 1
         return X_new, err, iteration
 
     def while_cond(val):
         _, err, iteration = val
-        exit_condition = iteration > max_iter
+        exit_condition = err < tol
         return jnp.logical_not(exit_condition)
 
     sol, residual, nb_iterations = lax.while_loop(

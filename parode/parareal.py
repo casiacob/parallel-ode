@@ -33,6 +33,7 @@ def parareal_integrate(
         X_F = X_dense[:, -1, :]
 
         res_inf = jnp.max(jnp.abs(X_G[1:] - X_F))
+        # debug.print('{y} {x}', y=iteration, x=res_inf)
 
         X_G_old_dense = vmap(seq_integrate, in_axes=(None, 0, None, None, None))(
             ode, X_G[:-1], dt_G, 1, coarse_solver
@@ -54,4 +55,4 @@ def parareal_integrate(
         while_body,
         (X_init, 0, 1000.0),
     )
-    return X
+    return X, nb_iterations
